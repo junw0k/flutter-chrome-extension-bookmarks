@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
-import 'chrome_api.dart'; // 방금 만든 API 파일 불러오기
 import 'bookmark_list_page.dart';
 
 void main() {
-  runApp(const MyBookmarkApp());
+  runApp(const ShadowBookmarkApp());
 }
 
-class MyBookmarkApp extends StatelessWidget {
-  const MyBookmarkApp({super.key});
+class ShadowBookmarkApp extends StatelessWidget {
+  const ShadowBookmarkApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // 디버그 띠 제거
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
+      title: 'Shadow Marks',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.indigo,
+          brightness: Brightness.light,
+        ),
+      ),
       home: const BookmarkListPage(),
     );
   }

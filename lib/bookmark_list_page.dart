@@ -10,39 +10,68 @@ class BookmarkListPage extends StatefulWidget {
 
 class _BookmarkListPageState extends State<BookmarkListPage> {
   final ChromeApi _api = ChromeApi();
-  List<Map<String, String>> _bookmarks = [];
+  List<Map<String, dynamic>> _bookmarks = [];
 
-  // 현재 페이지 추가 로직
-  Future<void> _addNewBookmark() async {
-    final newTab = await _api.getCurrentTab();
-    if (newTab.isNotEmpty) {
-      setState(() {
-        _bookmarks.add(newTab);
-      });
-      // 실제 제품이라면 여기서 chrome.storage에도 저장해야 합니다.
+  @override
+  void initState() {
+    super.initState();
+    _refreshList(); // 앱 시작 시 저장된 데이터 로드
+  }
+
+  // 목록 새로고침 로직
+  Future<void> _refreshList() async {
+    final data = await _api.getAllBookmarks();
+    setState(() {
+      _bookmarks = data;
+    });
+  }
+
+  // 저장 버튼 클릭 시 로직
+  Future<void> _onAddBookmark() async {
+    final currentTab = await _api.getCurrentTab();
+    if (currentTab.isNotEmpty) {
+      await _api.saveBookmark(currentTab);
+      await _refreshList(); // 저장 후 목록 업데이트
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('현재 페이지가 저장되었습니다!')),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Second Bookmarks')),
-      body: _bookmarks.isEmpty 
-        ? const Center(child: Text('저장된 즐겨찾기가 없습니다.'))
-        : ListView.builder(
-            itemCount: _bookmarks.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                leading: const Icon(Icons.bookmark),
-                title: Text(_bookmarks[index]['title'] ?? ''),
-                subtitle: Text(_bookmarks[index]['url'] ?? ''),
-                onTap: () => /* URL 열기 로직 */ {},
-              );
-            },
-          ),
+      appBar: AppBar(
+        title: const Text('Shadow Marks'),
+        elevation: 2,
+      ),
+      body: _bookmarks.isEmpty
+          ? const Center(child: Text('저장된 링크가 없습니다.'))
+          : ListView.builder(
+              itemCount: _bookmarks.length,
+              itemBuilder: (context, index) {
+                final item = _bookmarks[index];
+                return ListTile(
+                  leading: const Icon(Icons.bookmark_outline),
+                  title: Text(item['title'] ?? 'No Title', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  subtitle: Text(item['url'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                    onPressed: () async {
+                      await _api.deleteBookmark(index);
+                      _refreshList();
+                    },
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addNewBookmark,
-        child: const Icon(Icons.add_link),
+        onPressed: _onAddBookmark,
+        tooltip: '현재 탭 저장',
+        child: const Icon(Icons.add),
       ),
     );
   }
