@@ -58,6 +58,13 @@ class _BookmarkListPageState extends State<BookmarkListPage> {
                   leading: const Icon(Icons.bookmark_outline),
                   title: Text(item['title'] ?? 'No Title', maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Text(item['url'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  
+                  onTap: () async {
+                    final String? url = item['url'];
+                    if (url != null && url.isNotEmpty) {
+                      await _api.openUrl(url); // 새 탭 열기 호출
+                    }
+                  },
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                     onPressed: () async {

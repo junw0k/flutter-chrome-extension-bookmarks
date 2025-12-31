@@ -58,4 +58,13 @@ class ChromeApi {
       print("Error deleting bookmark: $e");
     }
   }
+  //url 
+  // lib/chrome_api.dart 에 추가
+  Future<void> openUrl(String url) async {
+    try {
+      await chrome.tabs.create(CreateProperties(url: url));
+    } catch (e) {
+      print("Error opening URL: $e");
+    }
+  }
 }
