@@ -67,9 +67,32 @@ class _BookmarkListPageState extends State<BookmarkListPage> {
                   },
                   trailing: IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                    onPressed: () async {
-                      await _api.deleteBookmark(index);
-                      _refreshList();
+                    onPressed: ()  {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('삭제 확인'),
+                          content: const Text('이 북마크를 삭제하시겠습니까?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('취소'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                await _api.deleteBookmark(index);
+                                _refreshList();
+                              },
+                              child: const Text(
+                                '삭제',
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                      
                     },
                   ),
                 );
