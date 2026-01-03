@@ -44,7 +44,9 @@ class _BookmarkListPageState extends State<BookmarkListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: const Text('Shadow Marks'),
         elevation: 2,
       ),
@@ -99,6 +101,7 @@ class _BookmarkListPageState extends State<BookmarkListPage> {
               },
             ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.indigo,
         onPressed: _onAddBookmark,
         tooltip: '현재 탭 저장',
         child: const Icon(Icons.add),
